@@ -184,7 +184,7 @@ def create_jitter_plots(N, qm_name, deepgd = False, ground_truth_incl = True):
     plt.close('all')
 
 
-create_jitter_plots(N = 300, qm_name = 'norm_stress_torch_pairs1', deepgd = True)
+# create_jitter_plots(N = 300, qm_name = 'norm_stress_torch_pairs1', deepgd = True)
 # create_jitter_plots(N = 300, qm_name = 'edge_lengths_sd_torch1')
 # create_jitter_plots(N = 300, qm_name = 'node_occlusion1')
 # create_jitter_plots(N = 300, qm_name = 'node_edge_occlusion1')
@@ -269,14 +269,15 @@ def individ_plot(qm_name, qm, ground_truth_incl = True):
     for strat in strats_perc:
         markers.append(key_marker_color[strat][0])
         colors.append(key_marker_color[strat][1])
-    plot_name = 'evaluations/' + qm_name + 'scal.pdf'
+    # plot_name = 'evaluations/' + qm_name + 'scal.pdf'
+    plot_name = 'evaluations/' + qm_name + 'scal_presentation.png'
 
     for i in range(len(strats_perc)):
-        pl_i = plt.plot(x, perc_dict[strats_perc[i]], label = strats_perc[i], linestyle = '-', marker = markers[i], color = colors[i], markersize = 8)
+        pl_i = plt.plot(x, perc_dict[strats_perc[i]], label = strats_perc[i], linestyle = '-', marker = markers[i], color = colors[i], markersize = 24)
 
     plt.xlabel('Number of Function Evaluations', fontsize=xlabel_font, labelpad = xlabel_pad)
     plt.ylabel(qm + ': Viewpoint - Ground Truth', fontsize=ylabel_font, labelpad = ylabel_pad)
-    ax.legend(loc = 'lower right', prop={'size': 20})
+    # ax.legend(loc = 'lower right', prop={'size': 20})
 
     plt.savefig(plot_name, bbox_inches= "tight")
     plt.clf()
@@ -322,6 +323,8 @@ def individ_plot(qm_name, qm, ground_truth_incl = True):
 
     print('done')
 
+
+# individ_plot('norm_stress_torch_pairs1', r'\texttt{ST}', ground_truth_incl = True)
 
 # individ_plot('norm_stress_torch_pairs1', r'\texttt{ST}', ground_truth_incl = True)
 # individ_plot('edge_lengths_sd_torch1', r'\texttt{ELD}', ground_truth_incl = True)

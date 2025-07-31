@@ -53,8 +53,8 @@ if __name__ == '__main__':
     bounds = list(zip(l_bound, u_bound))
     camera1 = PerspectiveCameras(device = device, focal_length = torch.tensor([1]).float().to(device))
 
-    qm_weights = {'Stress' : 1, 'Edge Length Deviation' : 0.8, 'Node Node Occlusion' : 0.9, 'Node Edge Occlusion' : None, 'Crossing Number' : 1}
-    # qm_weights = {'Stress': 1, 'Edge Length Deviation': None, 'Node Node Occlusion': None, 'Node Edge Occlusion': None, 'Crossing Number': None}
+    # qm_weights = {'Stress' : 1, 'Edge Length Deviation' : 0.8, 'Node Node Occlusion' : 0.9, 'Node Edge Occlusion' : None, 'Crossing Number' : 1}
+    qm_weights = {'Stress': 1, 'Edge Length Deviation': None, 'Node Node Occlusion': None, 'Node Edge Occlusion': None, 'Crossing Number': None}
     qm_functions_map = {'Stress' : norm_stress_torch_pairs, 'Edge Length Deviation' : edge_lengths_sd_torch, 'Node Node Occlusion' : node_occlusion, 'Node Edge Occlusion' : node_edge_occlusion, 'Crossing Number' : [crossings_number, cross_mlp]}
 
     qm_funcs_norm = {}
@@ -91,7 +91,6 @@ if __name__ == '__main__':
     sorted_file_names = sorted(sizes, key=sizes.get)
     # main subset of graphs for every metric except crossing number
     sorted_file_names = sorted_file_names[:45]
-
     # for crossing number we manually remove lesmis and can_96 since crashes occurred for these graphs inexplicably
     # sorted_file_names.remove('lesmis')
     # sorted_file_names.remove('can_96')
@@ -209,7 +208,6 @@ if __name__ == '__main__':
             N = int(N_max / particles)
             if not file_exists(data_obj):
                 pso_results = run_pso(N = N, particles = particles, l_bound = np.array(l_bound), u_bound = np.array(u_bound), data_obj = data_obj, qm_function = qm_funcs_norm, camera = camera1, write = write)
-
                 if torch.is_tensor(pso_results[0]):
                     best_val = round(1 - pso_results[0].item(), 6)
                 else:
@@ -224,7 +222,7 @@ if __name__ == '__main__':
             lr = 0.15
             if not file_exists(data_obj):
                 grad_desc_results = run_gradient_descent(curr_viewpoint = curr_viewpoint, data_obj = data_obj, N = N_max, lr = lr, device = device, qm_function = qm_funcs_grad, bounds = bounds, write = write)
-                # instead of taking the value from grad desc results we compute it with the viewpiont angles
+                # instead of taking the value from grad desc results we compute it with the viewpoint angles
                 # since the approximation of the crossing number does not return the actual crossing number
                 best_val = round(1 - loss_function(grad_desc_results['best_vwp'][:2], data_obj, qm_funcs_norm, camera1, False).item(), 6)
                 all_res['Gradient Descent (1)'] = best_val
@@ -255,6 +253,7 @@ if __name__ == '__main__':
                 best_val = round(1 - loss_function(uni_grad_res['best_vwp'][:2], data_obj, qm_funcs_norm, camera1, False).item(), 6)
                 all_res['Uniform + Gradient Descent'] = best_val
 
+
             # Uniform Gradient Descent version 2, doing gradient descent from the best viewpoint out of 10 starting viewpoints
             data_obj.strategy = 'uni_gradv2'
             N_start = 10
@@ -264,6 +263,7 @@ if __name__ == '__main__':
                 uni_grad_res = run_uni_grad_descent_v2(N_start = N_start, N_grad = N_grad, lr = lr, data_obj = data_obj, qm_function_norm = qm_funcs_norm, qm_function_grad = qm_funcs_grad, bounds = bounds, camera = camera1, write = write)
                 best_val = round(1 - loss_function(uni_grad_res['best_vwp'][:2], data_obj, qm_funcs_norm, camera1, False).item(), 6)
                 all_res['Uniform + Gradient Descent Best'] = best_val
+
 
             # Newton-Raphson
             # starting with one viewpoint
